@@ -1,17 +1,26 @@
+#!/usr/bin/env python
+import os
+import sys
+
+
+
 import os
 import platform
 
-env = Environment()
+env = SConscript("godot-cpp/SConstruct")
 
-godot_cpp_path = "C:/Users/pc/Desktop/DragonBall2D/DragonOrbsUniverse2D/client/addons/postgresql_plugin/godot-cpp"
-libpq_dir = "C:/Users/pc/Desktop/DragonBall2D/DragonOrbsUniverse2D/client/addons/postgresql_plugin"
+godot_cpp_path = "./godot-cpp"
+libpq_dir = "./"
+libpq_include_dir = "./postgres/include"  # Update this path as necessary
+libpq_lib_dir = "./postgres/lib"  # Update this path as necessary
 
 include_paths = [
     godot_cpp_path + "/include",
     godot_cpp_path + "/include/godot_cpp",
     godot_cpp_path + "/include/core",
     godot_cpp_path + "/gen/include",
-    godot_cpp_path + "/gdextension"
+    godot_cpp_path + "/gdextension",
+    libpq_include_dir
 ]
 
 print("Include paths:", include_paths)
@@ -19,20 +28,24 @@ print("Include paths:", include_paths)
 env.Append(CPPPATH=include_paths)
 
 env.Append(LIBPATH=[
-    libpq_dir
+    libpq_dir,
+    libpq_lib_dir
 ])
 
 env.Append(LIBS=[
     "libpq"
 ])
 
-# Set the compiler to use C++17
+# Set the compiler to use C++17 and enable exception handling
 if env['PLATFORM'] == 'win32' or env['PLATFORM'] == 'win64':
-    env.Append(CCFLAGS='/std:c++17')
+    env.Append(CCFLAGS=['/std:c++17', '/EHsc', '/D_DEBUG', '/W4'])
 else:
     env.Append(CCFLAGS='-std=c++17')
 
 sources = Glob('src/*.cpp')
 target = 'postgresql'
 
-env.SharedLibrary(target=target, source=sources)
+library = env.SharedLibrary(target=target, source=sources)
+
+
+Default(library)

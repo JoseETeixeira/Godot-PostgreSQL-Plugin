@@ -1,5 +1,6 @@
 #include "postgresql.h"
 #include <godot_cpp/core/class_db.hpp>
+#include <godot_cpp/variant/utility_functions.hpp>
 #include <godot_cpp/variant/array.hpp>
 #include <godot_cpp/variant/variant.hpp>
 
@@ -15,19 +16,19 @@ PostgreSQL::~PostgreSQL()
     close_db();
 }
 
-void PostgreSQL::connect_db(String host, int port, String dbname, String user, String password)
+void PostgreSQL::connect_db(const String &host, int port, const String &dbname, const String &user, const String &password)
 {
     String conninfo = "host=" + host + " port=" + itos(port) + " dbname=" + dbname + " user=" + user + " password=" + password;
     conn = PQconnectdb(conninfo.utf8().get_data());
 
     if (PQstatus(conn) != CONNECTION_OK)
     {
-        Godot::print("Connection to database failed: " + String(PQerrorMessage(conn)));
+        UtilityFunctions::print("Connection to database failed: " + String(PQerrorMessage(conn)));
         close_db();
     }
     else
     {
-        Godot::print("Connected to database successfully.");
+        UtilityFunctions::print("Connected to database successfully.");
     }
 }
 
@@ -40,13 +41,13 @@ void PostgreSQL::close_db()
     }
 }
 
-Array PostgreSQL::query(String sql)
+Array PostgreSQL::query(const String &sql)
 {
     Array result;
 
     if (!conn)
     {
-        Godot::print("No database connection.");
+        UtilityFunctions::print("No database connection.");
         return result;
     }
 
@@ -54,7 +55,7 @@ Array PostgreSQL::query(String sql)
 
     if (PQresultStatus(res) != PGRES_TUPLES_OK)
     {
-        Godot::print("Query failed: " + String(PQerrorMessage(conn)));
+        UtilityFunctions::print("Query failed: " + String(PQerrorMessage(conn)));
         PQclear(res);
         return result;
     }
