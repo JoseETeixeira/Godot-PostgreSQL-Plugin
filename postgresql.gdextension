@@ -1,0 +1,13 @@
+{
+    "entry_symbol": "postgresql_library_init",
+    "version": "1.0",
+    "language": "Cpp",
+    "singleton": false,
+    "dependencies": [],
+    "libraries": [
+        {
+            "path": "res://addons/postgresql_plugin/postgresql.dll",
+            "platform": "Windows"
+        }
+    ]
+}
